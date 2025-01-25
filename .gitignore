@@ -1,0 +1,50 @@
+# Byte-compiled files
+# Python generates bytecode files (.pyc) for faster 
+# execution. These are not necessary for version control.
+__pycache__/
+*.py[cod]
+
+# Environment variables
+# Environment variable files contain sensitive data like 
+# database credentials, API keys, etc. Keep this private 
+# and secure.
+.env
+
+# Virtual environment
+# Your virtual environment directory should be excluded 
+# since dependencies are managed using requirements.txt.
+venv/
+*.egg-info/
+
+# macOS-specific files
+# macOS automatically creates these files in directories.
+# They are unnecessary for your project.
+.DS_Store
+
+# Editor-specific files
+.vscode/
+.idea/
+
+# Logs and debug files
+# Log files generated during runtime or debugging should not 
+# be version-controlled.
+*.log
+
+# Python caches
+# Temporary caches created by Python or testing libraries 
+# like pytest.
+*.cache/
+*.pytest_cache/
+
+# Docker
+# If you use custom .env.docker files or override 
+# configurations for Docker Compose, exclude them from 
+# version control.
+*.env.docker
+docker-compose.override.yml
+
+# Redis and RabbitMQ temporary files (if any)
+# Redis may create .rdb or .aof files, which you don't 
+# need to track.
+*.rdb
+*.aof
