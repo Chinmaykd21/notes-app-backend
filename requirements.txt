@@ -6,6 +6,7 @@ graphene==3.4.3
 graphql-core==3.2.5
 graphql-relay==3.2.0
 h11==0.14.0
+httptools==0.6.4
 idna==3.10
 libcst==1.6.0
 markdown-it-py==3.0.0
@@ -15,6 +16,7 @@ pydantic==2.10.6
 pydantic_core==2.27.2
 Pygments==2.19.1
 python-dateutil==2.9.0.post0
+python-dotenv==1.0.1
 python-multipart==0.0.20
 PyYAML==6.0.2
 redis==5.2.1
@@ -28,4 +30,8 @@ strawberry-graphql==0.258.0
 typer==0.15.1
 typing_extensions==4.12.2
 uvicorn==0.34.0
+uvloop==0.21.0
+watchfiles==1.0.4
+websockets==14.2
 wheel==0.45.1
+wsproto==1.2.0
