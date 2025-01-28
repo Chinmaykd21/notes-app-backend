@@ -1,4 +1,5 @@
 from fastapi import APIRouter
+from app.services import connected_clients
 
 router = APIRouter()
 
@@ -9,3 +10,7 @@ def read_root():
 @router.get("/health")
 def health_check():
     return { "status": "ok" }
+
+@router.get("/clients")
+def get_connected_clients():
+    return { "connected_clients": len(connected_clients) }
