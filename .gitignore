@@ -9,6 +9,7 @@ __pycache__/
 # database credentials, API keys, etc. Keep this private 
 # and secure.
 .env
+.env.*
 secrets/
 
 # Virtual environment

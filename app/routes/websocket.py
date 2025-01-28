@@ -1,10 +1,7 @@
 import asyncio
-from redis import Redis
+from app.services import redis
 from fastapi import WebSocket, WebSocketDisconnect
 from app.services import connected_clients
-
-redis = Redis(host="localhost", port=6379, decode_responses=True)
-
 
 async def broadcast_updates():
     """Broadcast updates to all connected clients"""
