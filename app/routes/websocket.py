@@ -24,7 +24,6 @@ async def websocket_endpoint(websocket: WebSocket):
     try:
         while True:
             data = await websocket.receive_json()
-            print(f"data..., {data}")
             if data["type"] == "update":
                 redis.publish("notes_channel", data["content"])
     except WebSocketDisconnect:
