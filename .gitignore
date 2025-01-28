@@ -9,6 +9,7 @@ __pycache__/
 # database credentials, API keys, etc. Keep this private 
 # and secure.
 .env
+secrets/
 
 # Virtual environment
 # Your virtual environment directory should be excluded 

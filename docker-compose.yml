@@ -5,11 +5,11 @@ services:
     container_name: postgres_db
     restart: always
     environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: notes_app
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
     # volumes:
     #   - postgres_data:/var/lib/postgresql/data
 
@@ -17,16 +17,18 @@ services:
     image: redis:latest
     container_name: redis_cache
     restart: always
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
     ports:
-      - "6379:6379"
+      - "${REDIS_HOST}:${REDIS_PORT}:${REDIS_PORT}"
 
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq
     restart: always
     ports:
-      - "5672:5672" # Used by RabbitMQ clients
-      - "15672:15672" # RabbitMQ management dashboard
+      - "${RABBITMQ_PORT}:${RABBITMQ_PORT}" # Used by RabbitMQ clients
+      - "${RABBITMQ_DASHBOARD_PORT}:${RABBITMQ_DASHBOARD_PORT}" # RabbitMQ management dashboard
 
 # volumes:
 #   postgres_data:
