@@ -13,4 +13,5 @@ def health_check():
 
 @router.get("/clients")
 def get_connected_clients():
+    print(f"📢 Total Connected Clients: {len(connected_clients)}")  # Debug log
     return { "connected_clients": len(connected_clients) }
