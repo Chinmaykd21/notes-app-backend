@@ -1,29 +1,57 @@
-
-# GraphQL endpoints
 import strawberry
-from .models import Note
+from typing import List, Optional
+from app.services import memory_store
 
-notes = [] # In-memory storage for notes
+@strawberry.type
+class Note:
+    """
+    Defines the GraphQL Note type.
+    """
+    id: str
+    content: str
 
-"""
-Resolvers for Notes: Provides a structure for adding and fetching notes, 
-which can be extended later with a database.
-"""
 @strawberry.type
 class Query:
-    # Resolver for fetchng all notes
     @strawberry.field
-    def get_notes(self) -> list[Note]:
-        return notes
+    def notes(self) -> List[Note]:
+        """
+        Retrieves all notes from memory.
+        """
+        return [Note(**note) for note in memory_store.get_notes()]
+
+    @strawberry.field
+    def note_by_id(self, note_id: str) -> Optional[Note]:
+        """
+        Retrieves a note by its ID.
+        """
+        note_content = memory_store.get_note(note_id)
+        if note_content:
+            return Note(id=note_id, content=note_content)
+        return None
 
 @strawberry.type
 class Mutation:
-    # Resolver for adding a new note
     @strawberry.mutation
-    def add_note(self, content:str) -> Note:
-        note = Note(id=len(notes) + 1, content=content)
-        notes.append(note)
-        return note
+    def add_note(self, content: str) -> Note:
+        """
+        Adds a new note and returns the created note.
+        """
+        note_id = memory_store.add_note(content)
+        return Note(id=note_id, content=content)
 
-# Define graphql schema
+    @strawberry.mutation
+    def update_note(self, note_id: str, content: str) -> bool:
+        """
+        Updates an existing note.
+        """
+        return memory_store.update_note(note_id, content)
+
+    @strawberry.mutation
+    def delete_note(self, note_id: str) -> bool:
+        """
+        Deletes a note by ID.
+        """
+        return memory_store.delete_note(note_id)
+
+# ✅ Create GraphQL schema
 schema = strawberry.Schema(query=Query, mutation=Mutation)

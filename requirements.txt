@@ -9,7 +9,9 @@ h11==0.14.0
 httptools==0.6.4
 idna==3.10
 libcst==1.6.0
+Mako==1.3.8
 markdown-it-py==3.0.0
+MarkupSafe==3.0.2
 mdurl==0.1.2
 pika==1.3.2
 pydantic==2.10.6

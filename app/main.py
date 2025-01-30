@@ -1,9 +1,10 @@
 import os
+import uvicorn
 from fastapi import FastAPI
 from app.graphql import schema
-from strawberry.fastapi import GraphQLRouter
-from fastapi.middleware.cors import CORSMiddleware
 from app.routes import rest_router
+from strawberry.asgi import GraphQL
+from fastapi.middleware.cors import CORSMiddleware
 
 FRONTEND_DOMAIN = os.getenv("FRONTEND_DOMAIN", "http://localhost:5173")
 
@@ -21,9 +22,5 @@ app.add_middleware(
 # REST endpoints
 app.include_router(rest_router)
 
-"""
-This file is important because we want to set /graphql as the 
-endpoint for all GraphQL queries and mutations.
-"""
-grapql_app = GraphQLRouter(schema)
-app.include_router(grapql_app, prefix="/graphql") # Add GraphQL endpoint at /graphql
+# GraphQL route
+app.add_route("/graphql", GraphQL(schema))

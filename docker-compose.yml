@@ -30,5 +30,19 @@ services:
       - "${RABBITMQ_PORT}:${RABBITMQ_PORT}" # Used by RabbitMQ clients
       - "${RABBITMQ_DASHBOARD_PORT}:${RABBITMQ_DASHBOARD_PORT}" # RabbitMQ management dashboard
 
+# If we want to run this as a service then we can use this.
+# fastApi:
+#   build:
+#   container_name: fastApi_app
+#   restart: always
+#   environment:
+#     DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres_db/${POSTGRES_DB}
+#     REDIS_URL: redis://redis_cache:${REDIS_PORT}
+#   ports:
+#     - "8000": "8000"
+#   depends_on:
+#     - postgres
+#     - redis
+#     - rabbitmq
 # volumes:
 #   postgres_data:
