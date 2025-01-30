@@ -1,4 +1,4 @@
 from .redis_pubsub import RedisCache
-from .memory_store import memory_store
+from .redis_store import redis_store
 
-__all__ = ["RedisCache", "memory_store"]
+__all__ = ["RedisCache", "redis_store"]
