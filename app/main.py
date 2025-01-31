@@ -27,6 +27,14 @@ async def preflight_handler(request: Request):
         "Access-Control-Allow-Credentials": "true",
     })
 
+# REST endpoints
+app.include_router(rest_router)
+
+graphql_router = APIRouter()
+graphql_router.add_route("/graphql", GraphQL(schema), methods=["GET", "POST", "PUT", "DELETE"])
+graphql_router.add_route("/graphql", GraphQL(schema), methods=["OPTIONS"])
+app.include_router(graphql_router)
+
 # Add CORS middleware to allow only frontend requests
 app.add_middleware(
     CORSMiddleware,
@@ -35,11 +43,3 @@ app.add_middleware(
     allow_methods=["*"],  # Limit allowed methods
     allow_headers=["*"],  # Limit allowed headers
 )
-
-# REST endpoints
-app.include_router(rest_router)
-
-graphql_router = APIRouter()
-graphql_router.add_route("/graphql", GraphQL(schema), methods=["GET", "POST", "PUT", "DELETE"])
-graphql_router.add_route("/graphql", GraphQL(schema), methods=["OPTIONS"])
-app.include_router(graphql_router)
