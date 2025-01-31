@@ -9,23 +9,23 @@ load_dotenv()
 
 class RedisStore:
     """
-    Handles storing notes in Redis instead of in-memory.
+        Handles storing notes in Redis instead of in-memory.
     """
     def __init__(self):
         REDIS_URL = os.getenv("REDIS_URL")
         self.redis_client = redis.Redis.from_url(REDIS_URL, decode_responses=True)
 
-    def add_note(self, content: str) -> str:
+    def add_note(self, title: str, content: str) -> str:
         """
-        Adds a new note to Redis and returns its ID.
+            Adds a new note to Redis and returns its ID.
         """
         note_id = str(uuid.uuid4())  # Generate unique ID
-        self.redis_client.set(note_id, json.dumps({"id": note_id, "content": content}))
+        self.redis_client.set(note_id, json.dumps({"id": note_id, "title": title, "content": content}))
         return note_id
 
     def get_notes(self):
         """
-        Retrieves all notes stored in Redis.
+            Retrieves all notes stored in Redis.
         """
         keys = self.redis_client.keys()
         notes = []
@@ -42,15 +42,15 @@ class RedisStore:
         note = self.redis_client.get(note_id)
         if note:
             parsed_note = json.loads(note)  # ✅ Parse JSON string
-            return {"id": parsed_note["id"], "content": parsed_note["content"]}  # ✅ Ensure correct structure
+            return {"id": parsed_note["id"], "title": parsed_note["title"], "content": parsed_note["content"]}  # ✅ Ensure correct structure
         return None
 
-    def update_note(self, note_id: str, content: str):
+    def update_note(self, note_id: str, title: str, content: str):
         """
         Updates an existing note.
         """
         if self.redis_client.exists(note_id):
-            self.redis_client.set(note_id, json.dumps({"id": note_id, "content": content}))
+            self.redis_client.set(note_id, json.dumps({"id": note_id, "title": title, "content": content}))
             return True
         return False
 

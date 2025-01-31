@@ -8,6 +8,7 @@ class Note:
     Defines the GraphQL Note type.
     """
     id: str
+    title: str
     content: str
 
 @strawberry.type
@@ -15,42 +16,42 @@ class Query:
     @strawberry.field
     def notes(self) -> List[Note]:
         """
-        Retrieves all notes stored in Redis.
+            Retrieves all notes stored in Redis.
         """
-        return [Note(id=note["id"], content=note["content"]) for note in redis_store.get_notes()]
+        return [Note(id=note["id"], title=note["title"], content=note["content"]) for note in redis_store.get_notes()]
 
     @strawberry.field
     def note_by_id(self, note_id: str) -> Optional[Note]:
         """
-        Retrieves a note by its ID.
+            Retrieves a note by its ID.
         """
         note_data = redis_store.get_note(note_id)
         if note_data:
             # ✅ Ensure we’re returning a correctly formatted Note object
-            return Note(id=note_data["id"], content=note_data["content"])
+            return Note(id=note_data["id"], title=note_data["title"],content=note_data["content"])
         return None
 
 @strawberry.type
 class Mutation:
     @strawberry.mutation
-    def add_note(self, content: str) -> Note:
+    def add_note(self,title: str, content: str) -> Note:
         """
-        Adds a new note and returns it.
+            Adds a new note and returns it.
         """
-        note_id = redis_store.add_note(content)
-        return Note(id=note_id, content=content)
+        note_id = redis_store.add_note(title,content)
+        return Note(id=note_id, title=title,content=content)
 
     @strawberry.mutation
-    def update_note(self, note_id: str, content: str) -> bool:
+    def update_note(self, note_id: str, title: str, content: str) -> bool:
         """
-        Updates an existing note.
+            Updates an existing note.
         """
-        return redis_store.update_note(note_id, content)
+        return redis_store.update_note(note_id, title, content)
 
     @strawberry.mutation
     def delete_note(self, note_id: str) -> bool:
         """
-        Deletes a note by ID.
+            Deletes a note by ID.
         """
         return redis_store.delete_note(note_id)
 
