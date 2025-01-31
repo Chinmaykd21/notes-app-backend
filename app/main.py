@@ -40,6 +40,6 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[FRONTEND_DOMAIN],
     allow_credentials=True, # Allow cookies and authentication
-    allow_methods=["*"],  # Limit allowed methods
-    allow_headers=["*"],  # Limit allowed headers
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],  # Limit allowed methods
+    allow_headers=["Authorization", "Content-Type"],  # Limit allowed headers
 )
