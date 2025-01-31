@@ -11,15 +11,6 @@ FRONTEND_DOMAIN = os.getenv("FRONTEND_DOMAIN", "http://localhost:5173")
 app = FastAPI() # Initialize FastAPI app
 print("FRONTEND_DOMAIN:", os.getenv("FRONTEND_DOMAIN"))
 
-# Add CORS middleware to allow only frontend requests
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[FRONTEND_DOMAIN],
-    allow_credentials=True, # Allow cookies and authentication
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],  # Limit allowed methods
-    allow_headers=["Authorization", "Content-Type"],  # Limit allowed headers
-)
-
 # Secure Explicit Pre-flight handling
 @app.options("/graphql")
 async def preflight_handler(request: Request):
@@ -36,9 +27,19 @@ async def preflight_handler(request: Request):
         "Access-Control-Allow-Credentials": "true",
     })
 
+# Add CORS middleware to allow only frontend requests
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[FRONTEND_DOMAIN],
+    allow_credentials=True, # Allow cookies and authentication
+    allow_methods=["*"],  # Limit allowed methods
+    allow_headers=["*"],  # Limit allowed headers
+)
+
 # REST endpoints
 app.include_router(rest_router)
 
 graphql_router = APIRouter()
-graphql_router.add_route("/graphql", GraphQL(schema), methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
+graphql_router.add_route("/graphql", GraphQL(schema), methods=["GET", "POST", "PUT", "DELETE"])
+graphql_router.add_route("/graphql", GraphQL(schema), methods=["OPTIONS"])
 app.include_router(graphql_router)
