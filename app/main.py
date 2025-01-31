@@ -3,6 +3,7 @@ from fastapi import FastAPI, Request, Response
 from app.graphql import schema
 from app.routes import rest_router
 from strawberry.asgi import GraphQL
+from fastapi.routing import APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 
 FRONTEND_DOMAIN = os.getenv("FRONTEND_DOMAIN", "http://localhost:5173")
@@ -20,8 +21,8 @@ app.add_middleware(
 )
 
 # Secure Explicit Pre-flight handling
-@app.options("/{full_path:path}")
-async def preflight_handler(full_path:str, request: Request):
+@app.options("/graphql")
+async def preflight_handler(request: Request):
     origin = request.headers.get("Origin")
     if origin != FRONTEND_DOMAIN:
         return Response(status_code=403) # Reject unauthorized request
@@ -35,5 +36,6 @@ async def preflight_handler(full_path:str, request: Request):
 # REST endpoints
 app.include_router(rest_router)
 
-# GraphQL route
-app.add_route("/graphql", GraphQL(schema))
+graphql_router = APIRouter()
+graphql_router.add_route("/graphql", GraphQL(schema), methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])
+app.include_router(graphql_router)
