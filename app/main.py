@@ -9,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 FRONTEND_DOMAIN = os.getenv("FRONTEND_DOMAIN", "http://localhost:5173")
 
 app = FastAPI() # Initialize FastAPI app
+print("FRONTEND_DOMAIN:", os.getenv("FRONTEND_DOMAIN"))
 
 # Add CORS middleware to allow only frontend requests
 app.add_middleware(
