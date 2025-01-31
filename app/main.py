@@ -25,12 +25,15 @@ app.add_middleware(
 async def preflight_handler(request: Request):
     origin = request.headers.get("Origin")
     if origin != FRONTEND_DOMAIN:
+        print(f"❌ Unauthorized preflight request from: {origin}")
         return Response(status_code=403) # Reject unauthorized request
     
+    print("✅ Handling GraphQL Preflight Request")
     return Response(headers={
         "Access-Control-Allow-Origin": origin,
         "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-        "Access-Control-Allow-Headers": "Authorization, Content-Type"
+        "Access-Control-Allow-Headers": "Authorization, Content-Type",
+        "Access-Control-Allow-Credentials": "true",
     })
 
 # REST endpoints
