@@ -10,7 +10,6 @@ from app.services import websocket_router
 FRONTEND_DOMAIN = os.getenv("FRONTEND_DOMAIN", "http://localhost:5173")
 
 app = FastAPI() # Initialize FastAPI app
-print("FRONTEND_DOMAIN:", os.getenv("FRONTEND_DOMAIN"))
 
 # Secure Explicit Pre-flight handling
 @app.options("/graphql")

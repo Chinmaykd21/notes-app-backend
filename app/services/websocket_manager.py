@@ -10,11 +10,9 @@ async def websocket_endpoint(websocket: WebSocket):
         Websocket endpoint for real-time updates
     """
     await websocket_manager.connect(websocket)
-    print("websocket connected")
     try:
         while True:
             data = await websocket.receive_text()
-            print(f"websocket data received - {data}")
             try:
                 message = json.loads(data)  # ✅ Convert raw text to a dictionary
             except json.JSONDecodeError:
