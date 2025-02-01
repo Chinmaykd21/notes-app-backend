@@ -5,6 +5,7 @@ from app.routes import rest_router
 from strawberry.asgi import GraphQL
 from fastapi.routing import APIRouter
 from fastapi.middleware.cors import CORSMiddleware
+from app.services import websocket_router
 
 FRONTEND_DOMAIN = os.getenv("FRONTEND_DOMAIN", "http://localhost:5173")
 
@@ -29,11 +30,14 @@ async def preflight_handler(request: Request):
 
 # REST endpoints
 app.include_router(rest_router)
-
+# GraphQl endpoints
 graphql_router = APIRouter()
 graphql_router.add_route("/graphql", GraphQL(schema), methods=["GET", "POST", "PUT", "DELETE"])
 graphql_router.add_route("/graphql", GraphQL(schema), methods=["OPTIONS"])
 app.include_router(graphql_router)
+# Websocket
+app.include_router(websocket_router);
+
 
 # Add CORS middleware to allow only frontend requests
 app.add_middleware(
