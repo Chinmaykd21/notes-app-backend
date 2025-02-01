@@ -7,6 +7,8 @@ from dotenv import load_dotenv
 # ✅ Load .env variables
 load_dotenv()
 
+MAX_EXP = 84600
+
 class RedisStore:
     """
         Handles storing notes in Redis instead of in-memory.
@@ -20,7 +22,7 @@ class RedisStore:
             Adds a new note to Redis and returns its ID.
         """
         note_id = str(uuid.uuid4())  # Generate unique ID
-        self.redis_client.set(note_id, json.dumps({"id": note_id, "title": title, "content": content}))
+        self.redis_client.set(note_id, json.dumps({"id": note_id, "title": title, "content": content}), ex=MAX_EXP)
         return note_id
 
     def get_notes(self):
@@ -50,7 +52,7 @@ class RedisStore:
         Updates an existing note.
         """
         if self.redis_client.exists(note_id):
-            self.redis_client.set(note_id, json.dumps({"id": note_id, "title": title, "content": content}))
+            self.redis_client.set(note_id, json.dumps({"id": note_id, "title": title, "content": content}), ex=MAX_EXP)
             return True
         return False
 
