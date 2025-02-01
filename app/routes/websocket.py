@@ -26,6 +26,7 @@ class WebSocketManager:
             Sends a message to all connected clients.
         """
         message_str = json.dumps(message) # ✅ Convert back to JSON before sending
+        print("📤 Broadcasting WebSocket message:", message_str)
 
         for connection in self.active_connections:
             await connection.send_text(message_str)  # ✅ Use send_text() (NOT send())
