@@ -10,15 +10,22 @@ async def websocket_endpoint(websocket: WebSocket):
         Websocket endpoint for real-time updates
     """
     await websocket_manager.connect(websocket)
-    print('accepted')
     try:
         while True:
             data = await websocket.receive_text()
-            print('got data')
-            message = json.loads(data) # converts a JSON object to python dictionary when receiving
+
+            try:
+                message = json.loads(data)  # ✅ Convert raw text to a dictionary
+            except json.JSONDecodeError:
+                print("❌ Invalid JSON format received:", data)
+                continue  # Skip processing invalid data
+
+            if not isinstance(message, dict):  # ✅ Ensure it's a dictionary
+                print("❌ Unexpected message format:", message)
+                continue
+
             if message.get("type") in ["note_create", "note_update", "note_delete"]:
-                # json.dumps converts python dictionary to a JSON string before sending
-                print(f"message - {message}")
-                await websocket_manager.broadcast(json.dumps(message))  # ✅ Broadcast update
+                await websocket_manager.broadcast(message)  
     except WebSocketDisconnect:
+        print("❌ WebSocket disconnected")
         websocket_manager.disconnect(websocket)

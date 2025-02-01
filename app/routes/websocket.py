@@ -1,3 +1,4 @@
+import json
 from fastapi import WebSocket
 from typing import List
 class WebSocketManager:
@@ -20,12 +21,14 @@ class WebSocketManager:
         """
         self.active_connections.remove(websocket)
 
-    async def broadcast(self, message: str):
+    async def broadcast(self, message: dict):
         """
             Sends a message to all connected clients.
         """
+        message_str = json.dumps(message) # ✅ Convert back to JSON before sending
+
         for connection in self.active_connections:
-            await connection.send(message)
+            await connection.send_text(message_str)  # ✅ Use send_text() (NOT send())
 
 # A single instance to manage all websocket connections.
 websocket_manager = WebSocketManager()
