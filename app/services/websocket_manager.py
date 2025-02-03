@@ -1,30 +1,50 @@
 import json
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect
-from app.routes import websocket_manager
-
-websocket_router = APIRouter()
-
-@websocket_router.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket):
+from fastapi import WebSocket
+from typing import List, Dict
+class WebSocketManager:
     """
-        Websocket endpoint for real-time updates
+        Manages active WebSocket connection.
     """
-    await websocket_manager.connect(websocket)
-    try:
-        while True:
-            data = await websocket.receive_text()
+    def __init__(self):
+        self.active_connections: List[WebSocket] = []
+        self.connected_users: Dict[str, str] = {}
+
+    async def connect(self, websocket: WebSocket, username: str):
+        """
+            Accepts a WebSocket connection and adds to the list of active connections
+        """
+        await websocket.accept()
+        self.active_connections.append(websocket)
+        self.connected_users[websocket] = username
+        # Broadcast the user joined
+        import asyncio
+        asyncio.create_task(self.broadcast({ "type": "user_joined", "user": username }))
+
+    def disconnect(self, websocket: WebSocket):
+        """
+            Removes a WebSocket connection when it closes.
+        """
+        if websocket in self.active_connections:
+            username = self.connected_users.get(websocket, "Unknown uesr")
+            self.active_connections.remove(websocket)
+            del self.connected_users[websocket]
+
+            # Broadcast that user has left
+            import asyncio
+            asyncio.create_task(self.broadcast({ "type": "user_left", "user": username }))
+        return None
+
+    async def broadcast(self, message: dict):
+        """
+            Sends a message to all connected clients.
+        """
+        message_str = json.dumps(message) # ✅ Convert back to JSON before sending
+
+        for connection in self.active_connections:
             try:
-                message = json.loads(data)  # ✅ Convert raw text to a dictionary
-            except json.JSONDecodeError:
-                print("❌ Invalid JSON format received:", data)
-                continue  # Skip processing invalid data
+                await connection.send_text(message_str)
+            except Exception:
+                print(f"❌ Failed to send message to {connection}")
 
-            if not isinstance(message, dict):  # ✅ Ensure it's a dictionary
-                print("❌ Unexpected message format:", message)
-                continue
-
-            if message.get("type") in ["note_create", "note_update", "note_delete"]:
-                await websocket_manager.broadcast(message)  
-    except WebSocketDisconnect:
-        print("❌ WebSocket disconnected")
-        websocket_manager.disconnect(websocket)
+# A single instance to manage all websocket connections.
+websocket_manager = WebSocketManager()

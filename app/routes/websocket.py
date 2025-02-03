@@ -1,34 +1,31 @@
 import json
-from fastapi import WebSocket
-from typing import List
-class WebSocketManager:
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Query
+from app.services import websocket_manager
+
+websocket_router = APIRouter()
+
+@websocket_router.websocket("/ws") # Accept username as a parameter
+async def websocket_endpoint(websocket: WebSocket, username: str = Query("Guest")):
     """
-        Manages active WebSocket connection.
+        Websocket endpoint for real-time updates
     """
-    def __init__(self):
-        self.active_connections: List[WebSocket] = []
+    await websocket_manager.connect(websocket, username)
+    try:
+        while True:
+            data = await websocket.receive_text()
+            print("data", data)
+            try:
+                message = json.loads(data)  # ✅ Convert raw text to a dictionary
+            except json.JSONDecodeError:
+                print("❌ Invalid JSON format received:", data)
+                continue  # Skip processing invalid data
 
-    async def connect(self, websocket: WebSocket):
-        """
-            Accepts a WebSocket connection and adds to the list of active connections
-        """
-        await websocket.accept()
-        self.active_connections.append(websocket)
+            if not isinstance(message, dict):  # ✅ Ensure it's a dictionary
+                print("❌ Unexpected message format:", message)
+                continue
 
-    def disconnect(self, websocket: WebSocket):
-        """
-            Removes a WebSocket connection when it closes.
-        """
-        self.active_connections.remove(websocket)
-
-    async def broadcast(self, message: dict):
-        """
-            Sends a message to all connected clients.
-        """
-        message_str = json.dumps(message) # ✅ Convert back to JSON before sending
-
-        for connection in self.active_connections:
-            await connection.send_text(message_str)  # ✅ Use send_text() (NOT send())
-
-# A single instance to manage all websocket connections.
-websocket_manager = WebSocketManager()
+            if message.get("type") in ["note_create", "note_update", "note_delete"]:
+                await websocket_manager.broadcast(message)  
+    except WebSocketDisconnect:
+        print("❌ WebSocket disconnected")
+        websocket_manager.disconnect(websocket)

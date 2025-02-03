@@ -5,7 +5,7 @@ from app.routes import rest_router
 from strawberry.asgi import GraphQL
 from fastapi.routing import APIRouter
 from fastapi.middleware.cors import CORSMiddleware
-from app.services import websocket_router
+from app.routes import websocket_router
 
 FRONTEND_DOMAIN = os.getenv("FRONTEND_DOMAIN", "http://localhost:5173")
 
